@@ -13,12 +13,11 @@ const baseURL = "https://api.nobelprize.org/2.1";
 export default function App() {
   // eslint-disable-next-line no-unused-vars
   const [get, setGet] = useState([]);
+  const [year, setYear] = useState('');
 
   const awardYearFilter = [];
-  for (let i = 0; i < get.length; i++) {
-    if (awardYearFilter.indexOf(get[i].awardYear) < 0) {
-      awardYearFilter.push(get[i].awardYear);
-    }
+  for (let i = 1901; i <= 2023; i++) {
+    awardYearFilter.push([i])
   }
 
   useEffect(() => {
@@ -29,6 +28,13 @@ export default function App() {
   }, []);
 
   if (!get) return null;
+
+  function onClickFilter () {
+    console.log(year)
+    axios.get(`${baseURL}/nobelPrizes?nobelPrizeYear=${year}`).then((response) => {
+      setGet(response.data.nobelPrizes);
+    });
+  }
 
   return (
     <>
@@ -44,12 +50,11 @@ export default function App() {
           <Col md={3}>
             <Form>
               <Form.Label>
-                <b>ปีที่ได้รับรางวัล55555</b>
+                <b>ปีที่ได้รับรางวัล</b>
               </Form.Label>{" "}
               <br />
-              <Form.Label>ปีที่เริ่มต้น</Form.Label>
               {/* <Form.Select size="sm"> */}
-              <Form.Select>
+              <Form.Select onChange={(e)=>setYear(e.target.value)}>
                 <option value="">โปรดเลือก</option>
                 {awardYearFilter.map((option) => (
                   // eslint-disable-next-line react/jsx-key
@@ -57,18 +62,9 @@ export default function App() {
                 ))}
               </Form.Select>
               <br />
-              <Form.Label>ปีที่สิ้นสุด</Form.Label>
-              <Form.Select>
-                <option value="">โปรดเลือก</option>
-                {awardYearFilter.map((option) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <option value={option}>{option}</option>
-                ))}
-              </Form.Select>
-              <br />
-              <p>รวมเงินรางวัลทั้งหมด : {}</p>
+              <p>รวม : {}</p>
             </Form>
-            <Button className="button-filter">Apply Filter</Button>
+            <Button className="button-filter" onClick={onClickFilter}>Apply Filter</Button>
           </Col>
           {/* content right */}
           <Col md={9}>
